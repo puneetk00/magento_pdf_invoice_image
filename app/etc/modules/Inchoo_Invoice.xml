@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<config>
+    <modules>
+        <Inchoo_Invoice>
+           <active>true</active>
+           <codePool>local</codePool>
+       </Inchoo_Invoice>
+    </modules>
+</config>
