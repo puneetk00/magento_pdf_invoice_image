@@ -5,7 +5,7 @@
  * Original: Sales Order Invoice PDF model
  *
  * @category   Bananas
- * @package    Inhoo_Invoice
+ * @package    Bananas_Invoice
  * @author     Puneet Kumar - Bananas <puneetk00@gmail.com>
  */
 class Bananas_Invoice_Model_Order_Pdf_Items_Invoice_Default extends Mage_Sales_Model_Order_Pdf_Items_Invoice_Default
