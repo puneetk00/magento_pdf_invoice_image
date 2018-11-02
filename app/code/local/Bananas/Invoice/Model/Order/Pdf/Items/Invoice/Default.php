@@ -1,14 +1,14 @@
 <?php
 
 /**
- * Inchoo PDF rewrite to add products images
+ * Bananas PDF rewrite to add products images
  * Original: Sales Order Invoice PDF model
  *
- * @category   Inchoo
+ * @category   Bananas
  * @package    Inhoo_Invoice
- * @author     Mladen Lotar - Inchoo <mladen.lotar@inchoo.net>
+ * @author     Puneet Kumar - Bananas <puneetk00@gmail.com>
  */
-class Inchoo_Invoice_Model_Order_Pdf_Items_Invoice_Default extends Mage_Sales_Model_Order_Pdf_Items_Invoice_Default
+class Bananas_Invoice_Model_Order_Pdf_Items_Invoice_Default extends Mage_Sales_Model_Order_Pdf_Items_Invoice_Default
 {
     /**
      * Draw item line
@@ -20,40 +20,43 @@ class Inchoo_Invoice_Model_Order_Pdf_Items_Invoice_Default extends Mage_Sales_Mo
         $pdf    = $this->getPdf();
         $page   = $this->getPage();
         $lines  = array();
+		$t = 100;
 
         // draw Product name
         $lines[0] = array(array(
             'text' => Mage::helper('core/string')->str_split($item->getName(), 60, true, true),
-            'feed' => 35,
+            'feed' => 35			
         ));
 
         // draw SKU
         $lines[0][] = array(
             'text'  => Mage::helper('core/string')->str_split($this->getSku($item), 25),
-            'feed'  => 325
+            'feed'  => 325,
         );
 
-        // draw QTY
-        $lines[0][] = array(
-            'text'  => $item->getQty()*1,
-            'feed'  => 435
-        );
+        
 
         // draw Price
         $lines[0][] = array(
             'text'  => $order->formatPriceTxt($item->getPrice()),
-            'feed'  => 395,
+            'feed'  => 445,
             'font'  => 'bold',
-            'align' => 'right'
+            'align' => 'right'			
+        );
+		
+		// draw QTY
+        $lines[0][] = array(
+            'text'  => $item->getQty()*1,
+            'feed'  => 475,			
         );
 
         // draw Tax
-        $lines[0][] = array(
+      /*   $lines[0][] = array(
             'text'  => $order->formatPriceTxt($item->getTaxAmount()),
             'feed'  => 495,
             'font'  => 'bold',
             'align' => 'right'
-        );
+        ); */
 
         // draw Subtotal
         $lines[0][] = array(
@@ -80,6 +83,7 @@ class Inchoo_Invoice_Model_Order_Pdf_Items_Invoice_Default extends Mage_Sales_Mo
                     foreach ($values as $value) {
                         $lines[][] = array(
                             'text' => Mage::helper('core/string')->str_split($value, 50, true, true),
+							'font' => 'italic',
                             'feed' => 40
                         );
                     }
@@ -90,7 +94,7 @@ class Inchoo_Invoice_Model_Order_Pdf_Items_Invoice_Default extends Mage_Sales_Mo
 		//Edited default line height
         $lineBlock = array(
             'lines'  => $lines,
-            'height' => 60
+            'height' => 18
         );
 
         $page = $pdf->drawLineBlocks($page, array($lineBlock), array('table_header' => true));

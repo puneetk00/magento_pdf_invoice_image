@@ -1,14 +1,14 @@
 <?php
 
 /**
- * Inchoo PDF rewrite to add products images
+ * Bananas PDF rewrite to add products images
  * Original: Sales Order Invoice PDF model
  *
- * @category   Inchoo
+ * @category   Bananas
  * @package    Inhoo_Invoice
- * @author     Mladen Lotar - Inchoo <mladen.lotar@inchoo.net>
+ * @author     Puneet Kumar - Bananas <puneetk00@gmail.com>
  */
-class Inchoo_Invoice_Model_Order_Pdf_Invoice extends Mage_Sales_Model_Order_Pdf_Invoice
+class Bananas_Invoice_Model_Order_Pdf_Invoice extends Mage_Sales_Model_Order_Pdf_Invoice
 {
 	protected function insertImage($image, $x1, $y1, $x2, $y2, $width, $height, &$page)
 	{
@@ -23,8 +23,11 @@ class Inchoo_Invoice_Model_Order_Pdf_Invoice extends Mage_Sales_Model_Order_Pdf_
 					->keepFrame(false)
 					->resize($width, $height)
 					->__toString();
-
-				$imageLocation = substr($imagePath,strlen(Mage::getBaseUrl()));
+					
+					$basedir = Mage::getBaseDir();
+					
+				$imageLocation = $basedir . "/" . substr($imagePath,strlen(Mage::getBaseUrl(Mage_Core_Model_Store::URL_TYPE_WEB)));
+				
 				$image = Zend_Pdf_Image::imageWithPath($imageLocation);
 				//Draw image to PDF
 				$page->drawImage($image, $x1, $y1, $x2, $y2);
@@ -37,8 +40,8 @@ class Inchoo_Invoice_Model_Order_Pdf_Invoice extends Mage_Sales_Model_Order_Pdf_
 
 	public function getPdf($invoices = array())
 	{
-		$width = 1000;
-		$height = 1000;
+		$width = 150;
+		$height = 150;
 		$this->_beforeGetPdf();
 		$this->_initRenderer('invoice');
 
@@ -83,17 +86,18 @@ class Inchoo_Invoice_Model_Order_Pdf_Invoice extends Mage_Sales_Model_Order_Pdf_
 			//Added for product image
 			$page->drawText(Mage::helper('sales')->__('Product Image'), 245, $this->y, 'UTF-8');
 			$page->drawText(Mage::helper('sales')->__('SKU'), 325, $this->y, 'UTF-8');
-			$page->drawText(Mage::helper('sales')->__('Price'), 380, $this->y, 'UTF-8');
-			$page->drawText(Mage::helper('sales')->__('Qty'), 430, $this->y, 'UTF-8');
-			$page->drawText(Mage::helper('sales')->__('Tax'), 480, $this->y, 'UTF-8');
+			$page->drawText(Mage::helper('sales')->__('Price'), 420, $this->y, 'UTF-8');
+			$page->drawText(Mage::helper('sales')->__('Qty'), 470, $this->y, 'UTF-8');
+			//$page->drawText(Mage::helper('sales')->__('Tax'), 480, $this->y, 'UTF-8');
 			$page->drawText(Mage::helper('sales')->__('Subtotal'), 535, $this->y, 'UTF-8');
 
-			$this->y -=15;
+			$this->y -=20;
 
 			$page->setFillColor(new Zend_Pdf_Color_GrayScale(0));
 
 			/* Add body */
 			foreach ($invoice->getAllItems() as $item){
+				
 				if ($item->getOrderItem()->getParentItem()) {
 					continue;
 				}
@@ -101,14 +105,22 @@ class Inchoo_Invoice_Model_Order_Pdf_Invoice extends Mage_Sales_Model_Order_Pdf_
 				if ($this->y < 15) {
 					$page = $this->newPage(array('table_header' => true));
 				}
-
-				/* Draw item */
-				$page = $this->_drawItem($item, $page, $order);
+				
+				
 
 				/* Draw product image */
 				$productId = $item->getOrderItem()->getProductId();
 				$image = Mage::getModel('catalog/product')->load($productId);
-				$this->insertImage($image, 245, (int)($this->y + 15), 310, (int)($this->y+65), $width, $height, $page);
+				$this->insertImage($image, 200, (int)($this->y-100), 300, (int)($this->y), $width, $height, $page);
+				
+				/* Draw item */
+				$page = $this->_drawItem($item, $page, $order);
+				
+				$page->setLineColor(new Zend_Pdf_Color_RGB(0.93, 0.93, 0.93)); //black
+				$page->setLineWidth(0.5);
+				$page->drawLine(30, (int)($this->y-20), 570, (int)($this->y-20));
+				
+				$this->y -= 70;
 			}
 
 			/* Add totals */
@@ -119,7 +131,7 @@ class Inchoo_Invoice_Model_Order_Pdf_Invoice extends Mage_Sales_Model_Order_Pdf_
 			}
 		}
 		$this->_afterGetPdf();
-
+		
 		return $pdf;
 	}
 
